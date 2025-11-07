@@ -54,6 +54,7 @@ class TicketDetailScreen extends StatelessWidget {
 
                       await cartProvider.addItem(item);
 
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added ${item.title} to cart')));
                       Navigator.of(context).pop();
                     },

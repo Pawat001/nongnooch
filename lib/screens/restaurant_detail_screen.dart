@@ -53,6 +53,7 @@ class RestaurantDetailScreen extends StatelessWidget {
 
                       await cartProvider.addItem(item);
 
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reserved ${item.title} (mock) added to cart')));
                       Navigator.of(context).pop();
                     },

@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/language_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/quotation_types_provider.dart';
+import 'providers/auth_provider.dart';
 import 'localization/app_localizations.dart';
 import 'utils/app_theme.dart';
 import 'screens/main_navigation_screen.dart';
@@ -25,16 +27,20 @@ void main() async {
   // Initialize providers
   final languageProvider = LanguageProvider();
   final cartProvider = CartProvider();
+  final authProvider = AuthProvider();
   
   // Load saved data
   await languageProvider.loadSavedLanguage();
   await cartProvider.loadCart();
+  await authProvider.loadAuthState();
   
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: languageProvider),
         ChangeNotifierProvider.value(value: cartProvider),
+        ChangeNotifierProvider.value(value: authProvider),
+        ChangeNotifierProvider(create: (_) => QuotationTypesProvider()),
       ],
       child: const SuanNongNuchApp(),
     ),

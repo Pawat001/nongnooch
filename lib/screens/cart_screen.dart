@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/auth_provider.dart';
 import '../utils/app_theme.dart';
 import '../localization/app_localizations.dart';
+import 'login_screen.dart';
 
-/// Cart Screen - หน้าตะกร้าสินค้า
+/// Cart Screen - หน้าตะกร้าสินค้า with Auth Flow
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
@@ -247,14 +249,43 @@ class CartScreen extends StatelessWidget {
         padding: const EdgeInsets.all(AppTheme.spacingMedium),
         child: ElevatedButton(
           onPressed: () {
-            // TODO: Navigate to checkout screen with auth check
+            final authProvider = context.read<AuthProvider>();
+            // Auth Flow: Check login before checkout
+            if (!authProvider.isLoggedIn) {
+              // Show login required dialog
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('จำเป็นต้องเข้าสู่ระบบ'),
+                  content: const Text('กรุณาเข้าสู่ระบบเพื่อดำเนินการชำระเงิน'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: const Text('ยกเลิก'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        );
+                      },
+                      child: const Text('เข้าสู่ระบบ'),
+                    ),
+                  ],
+                ),
+              );
+              return;
+            }
+            // Proceed to checkout (mock)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   '${localization?.proceedToCheckout ?? "ดำเนินการชำระเงิน"}\n'
-                  'ต้องเข้าสู่ระบบก่อนชำระเงิน',
+                  'ยอดรวม ฿${cartProvider.grandTotal.toStringAsFixed(0)} (ผู้ใช้: ${authProvider.userName})',
                 ),
-                backgroundColor: AppTheme.primaryRed,
+                backgroundColor: Colors.green,
+                duration: const Duration(seconds: 3),
               ),
             );
           },
